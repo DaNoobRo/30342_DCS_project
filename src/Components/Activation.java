@@ -135,7 +135,12 @@ public class Activation implements Serializable {
 			Prod_FloatFloat();
 		if (Operation == TransitionOperation.Div_FloatFloat)
 			Div_FloatFlaot();
-		// ---------------------------------------------------------
+		// -------------------------Square--------------------------------
+		// In order to define it we also need to declare it in
+		// Enumerations-> TransitionOperations
+		if (Operation == TransitionOperation.Square)
+			Square(); // lower the method is implemented
+
 	}
 
 	private void MakeNull() throws CloneNotSupportedException {
@@ -305,29 +310,57 @@ public class Activation implements Serializable {
 				continue;
 			}
 
-//			Integer inputIndex = util.GetIndexByName(placeName, Parent.TempMarking);
-//			if (inputIndex == -1)
-//				continue;
-//
-//			PetriObject temp = Parent.TempMarking.get(inputIndex);
-
 			if (temp instanceof DataFloat) {
 				if (result == null) {
 					result = (PetriObject) ((DataFloat) temp).clone();
+				} else {
+					result.SetValue((float) result.GetValue() * (float) temp.GetValue());
 				}
-				result.SetValue((float) result.GetValue() * (float) temp.GetValue());
 			}
 
 			if (temp instanceof DataInteger) {
 				if (result == null) {
 					result = (PetriObject) ((DataInteger) temp).clone();
+				} else {
+					result.SetValue((Integer) result.GetValue() * (Integer) temp.GetValue());
 				}
-				result.SetValue((Integer) result.GetValue() * (Integer) temp.GetValue());
 			}
 		}
 		result.SetName(OutputPlaceName);
 		Parent.Parent.PlaceList.set(outputIndex, result);
 	}
+
+	//-----------------Square
+
+	private void Square() throws CloneNotSupportedException {
+		PetriObject temp = util.GetFromListByName(InputPlaceName, Parent.TempMarking);
+		if (temp == null) {
+			temp = util.GetFromListByName(InputPlaceName, Parent.Parent.ConstantPlaceList);
+		}
+		PetriObject result = null;
+		if (temp instanceof DataFloat) {
+			temp.SetValue((Float)temp.GetValue()*(Float)temp.GetValue());
+			result = (PetriObject) ((DataFloat) temp).clone();
+			System.out.println(temp.GetValue());
+		}
+		if (temp instanceof DataInteger) {
+			temp.SetValue((Integer)temp.GetValue()*(Integer)temp.GetValue());
+			result = (PetriObject) ((DataInteger) temp).clone();
+
+		}
+		if (result == null) {
+			return;
+		}
+		if (OutputPlaceName.contains("-")) {
+			result.SetName(OutputPlaceName.split("-")[1]);
+		} else {
+			result.SetName(OutputPlaceName);
+		}
+
+		result.SetValue(temp.GetValue());
+		util.SetToListByName(OutputPlaceName, Parent.Parent.PlaceList, result);
+	}
+
 
 	private void Sub() throws CloneNotSupportedException {
 		Integer outputIndex = util.GetIndexByName(OutputPlaceName, Parent.Parent.PlaceList);
