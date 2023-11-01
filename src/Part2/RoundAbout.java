@@ -129,7 +129,7 @@ public class RoundAbout {
 
         PetriTransition t7 = new PetriTransition(pn);
         t7.TransitionName = "t7";
-        t7.InputPlaceName.add("p1");
+        t7.InputPlaceName.add("p2");
 
         Condition T7Ct1 = new Condition(t7,"p2", TransitionCondition.HaveCarForMe);
 
